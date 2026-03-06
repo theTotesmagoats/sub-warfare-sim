@@ -514,6 +514,7 @@
     .resource-munitions { background: linear-gradient(90deg, #ff4444, #cc0000); }
     .resource-crew { background: linear-gradient(90deg, #00ff88, #00aa55); }
     .resource-supplies { background: linear-gradient(90deg, #44aaff, #0066cc); }
+    .resource-morale { background: linear-gradient(90deg, #ffaa00, #ffff00); }
 
     .torpedo-status {
       background: rgba(0, 20, 0, 0.6);
@@ -639,13 +640,237 @@
     .restart-btn:hover {
       box-shadow: 0 0 20px var(--phosphor-green);
     }
+
+    /* Submarine Hull Damage Diagram */
+    .hull-diagram {
+      background: #0a1a1e;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .hull-sections {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .hull-section {
+      background: linear-gradient(to right, #0d2a2e, #0a1a1e);
+      border: 2px solid var(--phosphor-green);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .hull-section.damaged {
+      background: linear-gradient(to right, #2a0a0a, #1a0505);
+      border-color: var(--red-alert);
+      color: var(--red-alert);
+      box-shadow: 0 0 8px var(--red-alert);
+    }
+
+    .hull-section.critical {
+      background: linear-gradient(to right, #4a0a0a, #2a0505);
+      border-color: red;
+      animation: criticalPulse 1s infinite;
+    }
+
+    @keyframes criticalPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .hull-label {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--amber-warn);
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Strategic Map */
+    .strategic-map {
+      background: #0a1a1e;
+      border-radius: 8px;
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+    }
+
+    .map-section {
+      margin-bottom: 12px;
+    }
+
+    .mission-card {
+      background: rgba(0, 30, 0, 0.8);
+      border: 1px solid var(--phosphor-green);
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .mission-card.active {
+      border-color: var(--amber-warn);
+    }
+
+    .mission-card.completed {
+      border-color: var(--phosphor-green);
+      opacity: 0.7;
+    }
+
+    .mission-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .mission-target {
+      font-weight: bold;
+      color: var(--red-alert);
+    }
+
+    .mission-status {
+      text-align: right;
+    }
+
+    /* ICBM Strike System */
+    .icbm-system {
+      background: rgba(255, 0, 0, 0.1);
+      border: 2px solid var(--red-alert);
+      padding: 12px;
+      margin-top: 15px;
+    }
+
+    .icbm-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .icbm-ready {
+      color: var(--phosphor-green);
+      font-weight: bold;
+    }
+
+    .icbm-cooldown {
+      color: var(--amber-warn);
+    }
+
+    /* Fire Controls */
+    .fire-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .fire-btn {
+      flex: 1;
+      padding: 12px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .fire-torpedo {
+      background: linear-gradient(135deg, #0d2a0f, #0a1a0c);
+      border: 2px solid var(--phosphor-green);
+      color: var(--phosphor-green);
+    }
+
+    .fire-torpedo:hover { box-shadow: 0 0 8px var(--phosphor-green); }
+    .fire-torpedo.active { background: #0f3a1f; border-color: var(--amber-warn); }
+
+    .fire-icbm {
+      background: linear-gradient(135deg, #2a0a0a, #1a0505);
+      border: 2px solid var(--red-alert);
+      color: var(--red-alert);
+    }
+
+    .fire-icbm:hover { box-shadow: 0 0 8px var(--red-alert); }
+    .fire-icbm.active { background: #3a1a1a; border-color: red; }
+
+    /* Mission Log */
+    .mission-log {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid var(--red-alert);
+      height: 100px;
+      overflow-y: auto;
+      padding: 6px;
+      font-size: 12px;
+    }
+
+    .mission-entry { padding: 3px 0; border-bottom: 1px dashed rgba(255, 68, 68, 0.4); }
+    .mission-id { color: var(--red-alert); font-weight: bold; }
+    .mission-success { color: var(--phosphor-green); }
+    .mission-fail { color: var(--red-alert); }
+
+    /* Target Coordinate Display */
+    .target-coords {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid var(--red-alert);
+      padding: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .coord-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .coord-label { color: var(--amber-warn); }
+    .coord-value { color: var(--red-alert); font-weight: bold; }
+
+    /* Target Classification */
+    .target-classification {
+      background: rgba(0, 20, 0, 0.6);
+      border: 1px solid var(--phosphor-green);
+      padding: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .classification-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .classification-label { color: #5a8a9a; }
+    .classification-value { color: var(--phosphor-green); font-weight: bold; }
+
+    /* Resupply Zone Indicator */
+    .resupply-zone {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px dashed var(--phosphor-green);
+      pointer-events: none;
+    }
+
+    .resupply-zone::before {
+      content: 'RESUPPLY';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--phosphor-green);
+      font-size: 8px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="damage-overlay" id="damageOverlay"></div>
 
   <div class="dashboard">
-    <!-- LEFT PANEL: Navigation & Operations -->
+    <!-- LEFT PANEL: Command Center -->
     <div class="panel">
       <h2 class="panel-label">Command Center</h2>
       
@@ -702,6 +927,28 @@
             <div class="resource-bar-fill resource-supplies" id="suppliesBar" style="width: 100%;"></div>
           </div>
         </div>
+
+        <!-- Morale -->
+        <div class="resource-bar-container">
+          <div class="resource-label">
+            <span>SAILOR MORALE</span>
+            <span id="moraleText">50%</span>
+          </div>
+          <div class="resource-bar-bg">
+            <div class="resource-bar-fill resource-morale" id="moraleBar" style="width: 50%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submarine Hull Damage Diagram -->
+      <h3 class="panel-label" style="font-size: 12px;">Hull Integrity</h3>
+      <div class="hull-diagram">
+        <div class="hull-sections">
+          <div class="hull-section" id="section-bow">BOW<br>SECTIONS</div>
+          <div class="hull-section" id="section-fore">FORE<br>WEAPONS</div>
+          <div class="hull-section" id="section-aft">AFT<br>PROPULSION</div>
+          <div class="hull-section" id="section-stern">STERN<br>SENSORS</div>
+        </div>
       </div>
 
       <!-- Torpedo Status -->
@@ -728,14 +975,29 @@
         <button type="button" class="tube-btn armed" data-tube="2"><span>TUBE 2<br>ARMED</span></button>
         <button type="button" class="tube-btn" data-tube="3"><span>TUBE 3<br>EMPTY</span></button>
         <button type="button" class="tube-btn ready" data-tube="4"><span>TUBE 4<br>FRIENDLY</span></button>
-        <button type="button" class="tube-btn armed" data-tube="5"><span>TUBE 5<br>HOSTILE</span></button>
-        <button type="button" class="tube-btn" data-tube="6"><span>TUBE 6<br>EMPTY</span></button>
-        <button type="button" class="tube-btn ready" data-tube="7"><span>TUBE 7<br>FRIENDLY</span></button>
-        <button type="button" class="tube-btn armed" data-tube="8"><span>TUBE 8<br>HOSTILE</span></button>
       </div>
 
-      <!-- Fire Control -->
-      <button id="fireControlBtn" class="fire-control-btn">FIRE CONTROL — ARMED</button>
+      <!-- ICBM System -->
+      <h3 class="panel-label" style="font-size: 12px;">Strategic Strike</h3>
+      <div class="icbm-system">
+        <div class="icbm-status">
+          <span>ICBM READY:</span>
+          <span id="icbmStatus" class="icbm-ready">READY FOR STRIKE</span>
+        </div>
+        <div class="fire-controls">
+          <button type="button" class="fire-btn fire-torpedo active" id="torpedoModeBtn">Torp Mode</button>
+          <button type="button" class="fire-btn fire-icbm" id="icbmModeBtn">ICBM Mode</button>
+        </div>
+        <div id="targetCoords" class="target-coords">
+          <div class="coord-row"><span class="coord-label">TARGET:</span><span class="coord-value">NONE SELECTED</span></div>
+          <div class="coord-row"><span class="coord-label">BEARING:</span><span class="coord-value">--°</span></div>
+          <div class="coord-row"><span class="coord-label">RANGE:</span><span class="coord-value">-- nm</span></div>
+        </div>
+      </div>
+
+      <!-- Fire Controls -->
+      <h3 class="panel-label" style="font-size: 12px;">Fire Controls</h3>
+      <button id="fireBtn" class="fire-control-btn" style="width: 100%;">FIRE TORPEDO</button>
 
       <!-- Resupply Button -->
       <button id="resupplyBtn" class="fire-control-btn" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3a 50%, #161636 100%);">RESUPPLY BASE (Center)</button>
@@ -745,16 +1007,17 @@
     <div class="panel">
       <h2 class="panel-label">Sonar Display Array</h2>
       
-      <div class="crt-housing">
+      <div class="crt-housing" style="height: 580px;">
         <canvas id="radarCanvas" width="680" height="580"></canvas>
         <div class="scanlines"></div>
         <div class="vignette"></div>
+        <div class="resupply-zone"></div>
       </div>
 
-      <!-- Target Coordinates -->
-      <h3 class="panel-label" style="font-size: 12px;">Target Analysis</h3>
-      <div class="coordinate-readout">
-        BRG: <span id="currentBearing">--°</span> / RNG: <span id="currentRange">-- nm</span>
+      <!-- Target Analysis -->
+      <h3 class="panel-label" style="font-size: 12px;">Target Classification</h3>
+      <div id="targetClassification" class="lcd-readout">
+        MOVE CURSOR OVER CONTACTS TO ANALYZE
       </div>
 
       <div style="margin-top: 12px; display:flex; justify-content:space-between; font-size: 13px;">
@@ -780,7 +1043,7 @@
       </div>
     </div>
 
-    <!-- RIGHT PANEL: Acoustic Analysis -->
+    <!-- RIGHT PANEL: Acoustic Analysis & Missions -->
     <div class="panel">
       <h2 class="panel-label">Acoustic Analysis</h2>
       
@@ -808,13 +1071,25 @@
         <input type="range" id="rangeSlider" min="5" max="100" value="20" step="5">
       </div>
 
-      <!-- Fire Button -->
-      <button id="fireBtn" class="fire-control-btn" style="width: 100%; margin-bottom: 15px;">FIRE</button>
-
-      <!-- Target Classification -->
-      <h3 class="panel-label" style="font-size: 12px;">Target Classification</h3>
-      <div id="targetClassification" class="lcd-readout">
-        SELECT CONTACT ON RADAR TO ANALYZE
+      <!-- Mission Status -->
+      <h3 class="panel-label" style="font-size: 12px;">Active Missions</h3>
+      <div class="strategic-map" id="missionLog">
+        <div class="mission-card active">
+          <div class="mission-header">
+            <span class="mission-id">MISSION-001</span>
+            <span class="mission-status">ACTIVE</span>
+          </div>
+          <div>THREAT ASSESSMENT: Hostile submarine detected in sector 7-G</div>
+          <div style="margin-top:4px;">OBJECTIVE: Neutralize hostile contact ID-H1</div>
+        </div>
+        <div class="mission-card active">
+          <div class="mission-header">
+            <span class="mission-id">MISSION-002</span>
+            <span class="mission-status">ACTIVE</span>
+          </div>
+          <div>THREAT ASSESSMENT: Fishing fleet detected in sector 3-C</div>
+          <div style="margin-top:4px;">OBJECTIVE: Avoid civilian casualties. Do not engage fishing vessels.</div>
+        </div>
       </div>
 
       <!-- Contact Log -->
@@ -868,12 +1143,18 @@ let resources = {
   munitions: 8,
   crew: 12,
   supplies: 100,
+  morale: 50, // NEW: Sailor morale
   reactorOutput: 100
 };
 
 // Torpedo State
 let isReloading = false;
 let reloadTimer = 0;
+
+// ICBM State
+let icbmReady = true;
+let icbmCooldown = 0;
+let currentFireMode = 'torpedo'; // 'torpedo' or 'icbm'
 
 // Game Objects
 let contacts = [];
@@ -981,6 +1262,11 @@ function updateResourcePanel() {
     const suppliesPercent = Math.max(0, resources.supplies);
     document.getElementById('suppliesText').textContent = `${Math.floor(suppliesPercent)}%`;
     document.getElementById('suppliesBar').style.width = `${suppliesPercent}%`;
+    
+    // Update Morale
+    const moralePercent = Math.max(0, resources.morale);
+    document.getElementById('moraleText').textContent = `${Math.floor(moralePercent)}%`;
+    document.getElementById('moraleBar').style.width = `${moralePercent}%`;
   } catch (e) {
     console.error('Error updating resource panel:', e);
   }
@@ -1131,6 +1417,31 @@ function playFireControl() {
   }
 }
 
+function playICBMLaunch() {
+  try {
+    if (!initAudio()) return;
+    
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 2.0);
+    
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 3.0);
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 3.2);
+  } catch (e) {
+    console.error('Error playing ICBM launch sound:', e);
+  }
+}
+
 function playExplosionSound() {
   try {
     if (!initAudio()) return;
@@ -1156,6 +1467,23 @@ function playExplosionSound() {
     osc.stop(audioCtx.currentTime + 1.3);
   } catch (e) {
     console.error('Error playing explosion sound:', e);
+  }
+}
+
+function createSonarEchoRing(sweepAngle, intensity = 1.0) {
+  try {
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    echoRings.push({
+      x: centerX + Math.cos(sweepAngle) * (canvas.width/1.8),
+      y: centerY + Math.sin(sweepAngle) * (canvas.width/1.8),
+      radius: 5,
+      opacity: 0.6 * intensity,
+      maxRadius: canvas.width / 1.2
+    });
+  } catch (e) {
+    console.error('Error creating sonar echo ring:', e);
   }
 }
 
@@ -1571,6 +1899,43 @@ class OilTrail {
   }
 }
 
+// Echo Rings
+let echoRings = [];
+
+class EchoRing {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = 5;
+    this.opacity = 0.6;
+    this.maxRadius = canvas.width / 1.2;
+  }
+
+  update() {
+    if (this.opacity <= 0 || this.radius > this.maxRadius) return false;
+    
+    this.radius += 2.0;
+    this.opacity -= 0.05;
+    
+    return true;
+  }
+
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(0, 255, 64, ${this.opacity})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    if (Math.floor(Date.now() / 50) % 4 === 0) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+      ctx.font = "10px 'Share Tech Mono'";
+      const rangeNm = Math.round(this.radius / 8);
+      ctx.fillText(`ECHO ${rangeNm}nm`, this.x - 15, this.y + 3);
+    }
+  }
+}
+
 // Draw Background
 function drawBackground() {
   const bgGradient = ctx.createRadialGradient(
@@ -1797,15 +2162,33 @@ function drawProjectiles() {
     trail.draw(ctx);
   }
 
+  // Draw echo rings
+  for (let i = echoRings.length - 1; i >= 0; i--) {
+    const ring = echoRings[i];
+    
+    if (!ring.update()) {
+      echoRings.splice(i, 1);
+      continue;
+    }
+    
+    ring.draw(ctx);
+  }
+
   // Draw noise mask (when firing)
   if (noiseMaskTimer > 0) {
     ctx.fillStyle = `rgba(0, 50, 0, ${0.3 * (noiseMaskTimer / GAME_CONSTANTS.NOISE_MASK_DURATION)})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.strokeStyle = "rgba(255, 0, 0, 0.4)";
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 100 + (Math.random() * 20), 0, Math.PI * 2);
-    ctx.stroke();
+    // Add noise effect
+    for (let i = 0; i < 10; i++) {
+      if (Math.random() < 0.3) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        
+        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.3})`;
+        ctx.fillRect(x, y, 5, 5);
+      }
+    }
   }
 }
 
@@ -1835,6 +2218,12 @@ function checkCollisions() {
         
         if (torpedo.ownerId === 'player') {
           addLogEntry(`HIT! ${contact.id} destroyed by torpedo.`, 'friendly');
+          
+          // Create oil trail from damaged ship
+          oilTrails.push(new OilTrail(contact.x, contact.y));
+          
+          // Apply damage to player sub
+          applyDamage(10);
         } else {
           addLogEntry(`${contact.id} hit by enemy torpedo!`, 'hostile');
           
@@ -1904,7 +2293,7 @@ function showVictoryModal() {
   addLogEntry('MISSION COMPLETE: All hostile vessels neutralized!', 'friendly');
 }
 
-// Apply Damage to Player
+// Apply Damage to Player Submarine
 function applyDamage(amount) {
   // Screen shake effect
   const overlay = document.getElementById('damageOverlay');
@@ -1923,8 +2312,10 @@ function applyDamage(amount) {
       // Reduce resources
       resources.crew = Math.max(0, resources.crew - amount/10);
       resources.fuel = Math.max(0, resources.fuel - amount/5);
+      resources.morale = Math.max(0, resources.morale - 10);
       
       updateResourcePanel();
+      updateHullDamage(amount);
       
       setTimeout(() => {
         gameState = 'ACTIVE';
@@ -1937,6 +2328,33 @@ function applyDamage(amount) {
       }, 3000);
     }
   }, 200); // Short shake, then freeze
+}
+
+// Update Hull Damage Display
+function updateHullDamage(damageAmount) {
+  const sections = ['section-bow', 'section-fore', 'section-aft', 'section-stern'];
+  
+  // Randomly select section to damage (unless all are already critical)
+  let availableSections = sections.filter(id => !document.getElementById(id).classList.contains('critical'));
+  
+  if (availableSections.length > 0) {
+    const randomSection = availableSections[Math.floor(Math.random() * availableSections.length)];
+    document.getElementById(randomSection).classList.add('damaged');
+    
+    // If damage is high, make it critical
+    if (damageAmount >= 25) {
+      setTimeout(() => {
+        document.getElementById(randomSection).classList.remove('damaged');
+        document.getElementById(randomSection).classList.add('critical');
+      }, 1000);
+    }
+  }
+  
+  // Check if all sections are critical (submarine sunk)
+  const criticalSections = sections.filter(id => document.getElementById(id).classList.contains('critical'));
+  if (criticalSections.length === 4) {
+    showGameOverModal("SUBMARINE DESTROYED - ALL SECTIONS CRITICAL");
+  }
 }
 
 // Fire Torpedo from Player
@@ -1975,6 +2393,74 @@ function fireTorpedo(bearing) {
   addLogEntry(`TORPEDO FIRED: Bearing ${bearing}°.`, 'friendly');
   
   updateTorpedoStatus();
+}
+
+// Fire ICBM Strike
+function fireICBM(bearing, range) {
+  if (!icbmReady) {
+    addLogEntry('SYSTEM: ICBMs still reloading. Please wait.', 'system');
+    return;
+  }
+
+  // Simulate ICBM strike with coordinate validation
+  const targetX = PLAYER_X + Math.cos(bearing * Math.PI / 180) * (range * 5);
+  const targetY = PLAYER_Y + Math.sin(bearing * Math.PI / 2) * (range * 5);
+
+  // Check if target is within valid range
+  if (range < 10 || range > 100) {
+    addLogEntry('WARNING: Target coordinates outside effective range. Strike aborted.', 'system');
+    return;
+  }
+
+  icbmReady = false;
+  icbmCooldown = 30; // 30 seconds cooldown
+
+  playICBMLaunch();
+  
+  // Show launch effect
+  ctx.fillStyle = '#ff4444';
+  ctx.font = "24px 'Orbitron'";
+  ctx.textAlign = "center";
+  ctx.fillText("ICBM LAUNCH IN PROGRESS", PLAYER_X, PLAYER_Y - 50);
+  
+  addLogEntry(`ICBM STRIKE INITIATED: Bearing ${bearing}°, Range ${range}nm.`, 'friendly');
+  
+  setTimeout(() => {
+    // Check if target is in range
+    let hitContact = null;
+    
+    for (const contact of contacts) {
+      const dist = Math.hypot(contact.x - PLAYER_X, contact.y - PLAYER_Y);
+      if (dist <= range * 5 + 20 && dist >= range * 5 - 20) {
+        hitContact = contact;
+        break;
+      }
+    }
+    
+    if (hitContact) {
+      explosions.push(new Explosion(hitContact.x, hitContact.y));
+      playExplosionSound();
+      
+      if (hitContact.type === 'hostile_sub') {
+        addLogEntry(`ICBM STRIKE SUCCESS! ${hitContact.id} destroyed.`, 'friendly');
+        oilTrails.push(new OilTrail(hitContact.x, hitContact.y));
+        
+        // High morale boost for success
+        resources.morale = Math.min(100, resources.morale + 25);
+      } else {
+        addLogEntry(`ICBM STRIKE FAILED! Target was ${hitContact.type}. Civilian casualties reported.`, 'hostile');
+        
+        // Morale penalty for civilian casualties
+        resources.morale = Math.max(0, resources.morale - 30);
+      }
+      
+      contacts = contacts.filter(c => c !== hitContact);
+    } else {
+      addLogEntry('ICBM STRIKE MISSED! Target area clear.', 'system');
+    }
+    
+    updateResourcePanel();
+  }, 2000); // 2 second delay for dramatic effect
 }
 
 // Fire Torpedo from Enemy
@@ -2026,12 +2512,30 @@ function checkReloadStatus() {
       isReloading = false;
       reloadTimer = 0;
       
-      btn.textContent = 'FIRE';
+      btn.textContent = 'FIRE TORPEDO';
       btn.disabled = false;
       status.textContent = 'READY';
       
       updateTorpedoStatus();
       addLogEntry('SYSTEM: Torpedoes reloaded and ready.', 'friendly');
+    }
+  }
+
+  // ICBM cooldown
+  if (!icbmReady) {
+    icbmCooldown--;
+    
+    const statusEl = document.getElementById('icbmStatus');
+    if (statusEl) {
+      if (icbmCooldown > 0) {
+        statusEl.textContent = `RELOADING... ${Math.ceil(icbmCooldown)}s`;
+        statusEl.className = 'icbm-cooldown';
+      } else {
+        icbmReady = true;
+        statusEl.textContent = 'READY FOR STRIKE';
+        statusEl.className = 'icbm-ready';
+        addLogEntry('SYSTEM: ICBMs reloaded and ready for strategic strike.', 'system');
+      }
     }
   }
 }
@@ -2045,6 +2549,16 @@ function updateResources() {
   // Crew depletes faster if supplies are low
   if (resources.supplies < 25) {
     resources.crew -= 0.1;
+  }
+  
+  // Morale affects repair speed and crew efficiency
+  const moraleFactor = resources.morale / 100;
+  
+  // Low morale increases resource decay
+  if (resources.morale < 30) {
+    resources.fuel *= 1.2; // Higher consumption when morale is low
+    resources.supplies *= 1.2;
+    resources.crew -= 0.05; // Crew gets more fatigued
   }
   
   // Check for critical resource levels
@@ -2089,6 +2603,7 @@ function restartGame() {
   resources.munitions = 8;
   resources.crew = 12;
   resources.supplies = 100;
+  resources.morale = 50; // Reset morale
   resources.reactorOutput = 100;
   
   // Reset game state
@@ -2098,12 +2613,21 @@ function restartGame() {
   isReloading = false;
   reloadTimer = 0;
   noiseMaskTimer = 0;
+  icbmReady = true;
+  icbmCooldown = 0;
   
   // Clear objects
   contacts = [];
   torpedoes = [];
   explosions = [];
   oilTrails = [];
+  echoRings = [];
+  
+  // Reset hull damage
+  document.getElementById('section-bow').classList.remove('damaged', 'critical');
+  document.getElementById('section-fore').classList.remove('damaged', 'critical');
+  document.getElementById('section-aft').classList.remove('damaged', 'critical');
+  document.getElementById('section-stern').classList.remove('damaged', 'critical');
   
   // Generate initial contacts
   generateRandomContacts();
@@ -2227,7 +2751,7 @@ function updateCoordinateDisplay() {
 function updateTargetClassification() {
   if (!selectedContactId) {
     if (document.getElementById('targetClassification')) {
-      document.getElementById('targetClassification').innerHTML = 'SELECT CONTACT ON RADAR TO ANALYZE';
+      document.getElementById('targetClassification').innerHTML = 'MOVE CURSOR OVER CONTACTS TO ANALYZE';
     }
     return;
   }
@@ -2287,6 +2811,25 @@ function updateTargetClassification() {
   } else {
     selectedContactId = null;
     updateTargetClassification();
+  }
+}
+
+// Update Target Coordinate Display for ICBM
+function updateICBMDisplay() {
+  if (mouseX !== null && mouseY !== null) {
+    const dx = mouseX - centerX;
+    const dy = mouseY - centerY;
+    
+    let bearingRad = Math.atan2(dy, dx);
+    if (bearingRad < 0) bearingRad += Math.PI * 2;
+    const bearingDeg = Math.round(bearingRad * 180 / Math.PI);
+    
+    const distPx = Math.sqrt(dx*dx + dy*dy);
+    const rangeNm = Math.round(distPx / 5);
+    
+    // Update ICBM target display
+    document.querySelector('.coord-value:nth-child(2)').textContent = `${bearingDeg}°`;
+    document.querySelector('.coord-value:nth-child(4)').textContent = `${rangeNm} nm`;
   }
 }
 
@@ -2351,6 +2894,8 @@ function drawAnimationEffects() {
         ctx.fillRect(x, y, 5, 5);
       }
     }
+    
+    noiseMaskTimer--;
   }
 
   // Draw explosions
@@ -2421,6 +2966,9 @@ function drawAnimationEffects() {
           
           // Create oil trail from damaged ship
           oilTrails.push(new OilTrail(contact.x, contact.y));
+          
+          // Apply damage to player sub
+          applyDamage(10);
         } else {
           addLogEntry(`${contact.id} hit by enemy torpedo!`, 'hostile');
           
@@ -2447,25 +2995,6 @@ function drawAnimationEffects() {
     }
     
     trail.draw(ctx);
-  }
-
-  // Draw noise mask
-  if (noiseMaskTimer > 0) {
-    ctx.fillStyle = `rgba(0, 50, 0, ${0.3 * (noiseMaskTimer / GAME_CONSTANTS.NOISE_MASK_DURATION)})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Add noise effect
-    for (let i = 0; i < 10; i++) {
-      if (Math.random() < 0.3) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        
-        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.3})`;
-        ctx.fillRect(x, y, 5, 5);
-      }
-    }
-    
-    noiseMaskTimer--;
   }
 
   // Update enemy log
@@ -2740,7 +3269,19 @@ function setupEventListeners() {
           bearing = Math.round(bearingRad * 180 / Math.PI);
         }
         
-        fireTorpedo(bearing);
+        // Check fire mode
+        if (currentFireMode === 'icbm') {
+          // Get range from current mouse position
+          let range = 20; // default
+          if (mouseX !== null && mouseY !== null) {
+            const distPx = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
+            range = Math.round(distPx / 5);
+          }
+          
+          fireICBM(bearing, range);
+        } else {
+          fireTorpedo(bearing);
+        }
       });
     }
 
@@ -2800,11 +3341,38 @@ function setupEventListeners() {
           resources.munitions = 8;
           resources.crew = 12;
           resources.supplies = 100;
+          resources.morale = Math.min(100, resources.morale + 30);
           
           addLogEntry('RESUPPLY COMPLETE: All systems fully replenished.', 'friendly');
           updateResourcePanel();
         } else {
           addLogEntry('WARNING: Must be in RESUPPLY ZONE (center area) to resupply.', 'system');
+        }
+      });
+    }
+
+    // Fire mode toggle
+    const torpedoModeBtn = document.getElementById('torpedoModeBtn');
+    const icbmModeBtn = document.getElementById('icbmModeBtn');
+    
+    if (torpedoModeBtn && icbmModeBtn) {
+      torpedoModeBtn.addEventListener('click', () => {
+        currentFireMode = 'torpedo';
+        torpedoModeBtn.classList.add('active');
+        icbmModeBtn.classList.remove('active');
+        document.getElementById('fireBtn').textContent = 'FIRE TORPEDO';
+        addLogEntry('SYSTEM: Fire mode switched to torpedoes.', 'system');
+      });
+      
+      icbmModeBtn.addEventListener('click', () => {
+        if (icbmReady) {
+          currentFireMode = 'icbm';
+          torpedoModeBtn.classList.remove('active');
+          icbmModeBtn.classList.add('active');
+          document.getElementById('fireBtn').textContent = 'FIRE ICBM STRIKE';
+          addLogEntry('SYSTEM: Fire mode switched to strategic strike.', 'system');
+        } else {
+          addLogEntry('WARNING: ICBMs still reloading. Cannot switch modes.', 'system');
         }
       });
     }
@@ -2893,6 +3461,12 @@ function animate() {
     if (mouseX !== null && mouseY !== null) {
       updateCoordinateDisplay();
       updateTargetClassification();
+      
+      // Update ICBM display
+      if (currentFireMode === 'icbm') {
+        updateICBMDisplay();
+      }
+      
       drawCoordinateCrosshair();
     }
     
