@@ -1356,9 +1356,10 @@ function playSonarPing(bearingAngle, contactSpeed) {
     osc.start();
     osc.stop(audioCtx.currentTime + 0.85);
     
-    setTimeout(() => { createSonarEchoRing(sweepAngle, 0.7); }, 250);
-    setTimeout(() => { createSonarEchoRing(sweepAngle, 0.5); }, 450);
-    setTimeout(() => { createSonarEchoRing(sweepAngle, 0.3); }, 800);
+    // ECHO RINGS DISABLED UNTIL IMPLEMENTED PROPERLY
+    // setTimeout(() => { createSonarEchoRing(sweepAngle, 0.7); }, 250);
+    // setTimeout(() => { createSonarEchoRing(sweepAngle, 0.5); }, 450);
+    // setTimeout(() => { createSonarEchoRing(sweepAngle, 0.3); }, 800);
     
   } catch (e) {
     console.error('Error playing sonar ping:', e);
@@ -1467,23 +1468,6 @@ function playExplosionSound() {
     osc.stop(audioCtx.currentTime + 1.3);
   } catch (e) {
     console.error('Error playing explosion sound:', e);
-  }
-}
-
-function createSonarEchoRing(sweepAngle, intensity = 1.0) {
-  try {
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    
-    echoRings.push({
-      x: centerX + Math.cos(sweepAngle) * (canvas.width/1.8),
-      y: centerY + Math.sin(sweepAngle) * (canvas.width/1.8),
-      radius: 5,
-      opacity: 0.6 * intensity,
-      maxRadius: canvas.width / 1.2
-    });
-  } catch (e) {
-    console.error('Error creating sonar echo ring:', e);
   }
 }
 
@@ -1899,7 +1883,7 @@ class OilTrail {
   }
 }
 
-// Echo Rings
+// Echo Rings (for future implementation)
 let echoRings = [];
 
 class EchoRing {
@@ -2124,84 +2108,53 @@ function drawRadarSweep() {
   ctx.fillText("E", centerX + radiusOffset, centerY + 4);
 }
 
-// Draw Torpedoes and Explosions
+// Unified Physics & Rendering Loop (Consolidated from drawProjectiles and checkCollisions)
 function drawProjectiles() {
-  // Update and draw torpedoes
-  for (let i = torpedoes.length - 1; i >= 0; i--) {
-    const torpedo = torpedoes[i];
-    
-    if (!torpedo.update()) {
-      torpedoes.splice(i, 1);
-      continue;
-    }
-    
-    torpedo.draw(ctx);
-  }
-
-  // Update and draw explosions
-  for (let i = explosions.length - 1; i >= 0; i--) {
-    const explosion = explosions[i];
-    
-    if (!explosion.update()) {
-      explosions.splice(i, 1);
-      continue;
-    }
-    
-    explosion.draw(ctx);
-  }
-
-  // Draw oil trails from damaged ships
+  // 1. Process Oil Trails (from damaged ships)
   for (let i = oilTrails.length - 1; i >= 0; i--) {
     const trail = oilTrails[i];
-    
     if (!trail.update()) {
       oilTrails.splice(i, 1);
       continue;
     }
-    
     trail.draw(ctx);
   }
 
-  // Draw echo rings
-  for (let i = echoRings.length - 1; i >= 0; i--) {
-    const ring = echoRings[i];
-    
-    if (!ring.update()) {
-      echoRings.splice(i, 1);
+  // 2. Process Explosions & Area Damage
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    const explosion = explosions[i];
+    if (!explosion.update()) {
+      explosions.splice(i, 1);
       continue;
     }
-    
-    ring.draw(ctx);
-  }
+    explosion.draw(ctx);
 
-  // Draw noise mask (when firing)
-  if (noiseMaskTimer > 0) {
-    ctx.fillStyle = `rgba(0, 50, 0, ${0.3 * (noiseMaskTimer / GAME_CONSTANTS.NOISE_MASK_DURATION)})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Add noise effect
-    for (let i = 0; i < 10; i++) {
-      if (Math.random() < 0.3) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        
-        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.3})`;
-        ctx.fillRect(x, y, 5, 5);
+    // Secondary collision: Explosions damaging nearby contacts
+    for (let c = contacts.length - 1; c >= 0; c--) {
+      const contact = contacts[c];
+      const dx = explosion.x - contact.x;
+      const dy = explosion.y - contact.y;
+      if (Math.sqrt(dx*dx + dy*dy) < explosion.radius) {
+        oilTrails.push(new OilTrail(contact.x, contact.y));
+        addLogEntry(`CRITICAL HIT on ${contact.id}! Creating oil trail.`, 'friendly');
+        contacts.splice(c, 1);
       }
     }
   }
-}
 
-// Check Collisions
-function checkCollisions() {
-  // Torpedo vs Contact collisions
+  // 3. Process Torpedo Vectors & Primary Collisions
   for (let t = torpedoes.length - 1; t >= 0; t--) {
     const torpedo = torpedoes[t];
-    
+    if (!torpedo.update()) {
+      torpedoes.splice(t, 1);
+      continue;
+    }
+    torpedo.draw(ctx);
+
     for (let c = contacts.length - 1; c >= 0; c--) {
       const contact = contacts[c];
       
-      // Don't hit own side
+      // IFF (Identify Friend or Foe) Check
       if ((torpedo.ownerId === 'player' && contact.type === 'friendly_sub') ||
           (torpedo.ownerId !== 'player' && contact.type !== 'hostile_sub')) {
         continue;
@@ -2209,25 +2162,16 @@ function checkCollisions() {
 
       const dx = torpedo.x - contact.x;
       const dy = torpedo.y - contact.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
       
-      if (distance < 15) { // Hit radius
+      if (Math.sqrt(dx*dx + dy*dy) < 15) { // Impact threshold
         explosions.push(new Explosion(contact.x, contact.y));
-        
         playExplosionSound();
         
         if (torpedo.ownerId === 'player') {
-          addLogEntry(`HIT! ${contact.id} destroyed by torpedo.`, 'friendly');
-          
-          // Create oil trail from damaged ship
           oilTrails.push(new OilTrail(contact.x, contact.y));
-          
-          // Apply damage to player sub
-          applyDamage(10);
+          addLogEntry(`HIT! ${contact.id} destroyed by torpedo.`, 'friendly');
         } else {
           addLogEntry(`${contact.id} hit by enemy torpedo!`, 'hostile');
-          
-          // Player hit!
           if (contact.type === 'friendly_sub' && contact.x === PLAYER_X && contact.y === PLAYER_Y) {
             applyDamage(25);
           }
@@ -2235,43 +2179,36 @@ function checkCollisions() {
         
         contacts.splice(c, 1);
         torpedoes.splice(t, 1);
-        break;
+        break; // Torpedo detonated, move to next
       }
     }
   }
 
-  // Contact vs Contact collisions (avoidance)
-  for (let i = 0; i < contacts.length; i++) {
-    for (let j = i + 1; j < contacts.length; j++) {
-      const c1 = contacts[i];
-      const c2 = contacts[j];
-      
-      // Skip if same type and both friendly
-      if (c1.type === 'friendly_sub' && c2.type === 'friendly_sub') continue;
-      
-      const dx = c1.x - c2.x;
-      const dy = c1.y - c2.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
-      if (distance < 20) {
-        // Apply collision avoidance
-        const angleAwayFromContact2 = Math.atan2(dy, dx);
-        
-        let angleDiff = angleAwayFromContact2 - c1.angle;
-        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-        
-        c1.angle += angleDiff * 0.3;
+  // 4. Acoustic Noise Mask Decay
+  if (noiseMaskTimer > 0) {
+    ctx.fillStyle = `rgba(0, 50, 0, ${0.3 * (noiseMaskTimer / GAME_CONSTANTS.NOISE_MASK_DURATION)})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Static interference effect
+    for (let i = 0; i < 10; i++) {
+      if (Math.random() < 0.3) {
+        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.3})`;
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 5, 5);
       }
     }
+    noiseMaskTimer--; // Properly decaying the shockwave
   }
+}
 
-  // Update contact count
-  if (document.getElementById('contactCount')) {
-    document.getElementById('contactCount').textContent = contacts.length;
-  }
+// Check Collisions - DEPRECATED: Logic now embedded in drawProjectiles()
+function checkCollisions() {
+  // This function is deprecated. Collision logic has been moved to drawProjectiles()
+  // Kept for backwards compatibility but does nothing
+}
 
-  checkVictoryCondition();
+// Draw Torpedoes and Explosions (DEPRECATED)
+function drawAnimationEffects() {
+  // DEPRECATED: Consolidated into drawProjectiles()
 }
 
 // Check Victory Condition
@@ -2865,194 +2802,23 @@ function drawCoordinateCrosshair() {
   }
 }
 
-// Draw Animation Effects
-function drawAnimationEffects() {
-  // Draw oil trails from damaged ships
-  for (let i = oilTrails.length - 1; i >= 0; i--) {
-    const trail = oilTrails[i];
-    
-    if (!trail.update()) {
-      oilTrails.splice(i, 1);
-      continue;
-    }
-    
-    trail.draw(ctx);
-  }
-
-  // Draw noise mask indicator
-  if (noiseMaskTimer > 0) {
-    ctx.fillStyle = `rgba(255, 0, 0, ${0.2 * (noiseMaskTimer / GAME_CONSTANTS.NOISE_MASK_DURATION)})`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Add noise effect
-    for (let i = 0; i < 10; i++) {
-      if (Math.random() < 0.3) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        
-        ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.3})`;
-        ctx.fillRect(x, y, 5, 5);
-      }
-    }
-    
-    noiseMaskTimer--;
-  }
-
-  // Draw explosions
-  for (let i = explosions.length - 1; i >= 0; i--) {
-    const explosion = explosions[i];
-    
-    if (!explosion.update()) {
-      explosions.splice(i, 1);
-      continue;
-    }
-    
-    explosion.draw(ctx);
-
-    // Check collision with contacts
-    for (let c = contacts.length - 1; c >= 0; c--) {
-      const contact = contacts[c];
-      
-      const dx = explosion.x - contact.x;
-      const dy = explosion.y - contact.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
-      if (distance < explosion.radius) {
-        // Apply damage to contact
-        playExplosionSound();
-        
-        // Create oil trail from damaged ship
-        oilTrails.push(new OilTrail(contact.x, contact.y));
-        
-        addLogEntry(`CRITICAL HIT on ${contact.id}! Creating oil trail.`, 'friendly');
-        
-        contacts.splice(c, 1);
-      }
-    }
-  }
-
-  // Draw torpedoes
-  for (let i = torpedoes.length - 1; i >= 0; i--) {
-    const torpedo = torpedoes[i];
-    
-    if (!torpedo.update()) {
-      torpedoes.splice(i, 1);
-      continue;
-    }
-    
-    torpedo.draw(ctx);
-
-    // Check collision with contacts
-    for (let c = contacts.length - 1; c >= 0; c--) {
-      const contact = contacts[c];
-      
-      // Don't hit own side
-      if ((torpedo.ownerId === 'player' && contact.type === 'friendly_sub') ||
-          (torpedo.ownerId !== 'player' && contact.type !== 'hostile_sub')) {
-        continue;
-      }
-
-      const dx = torpedo.x - contact.x;
-      const dy = torpedo.y - contact.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
-      if (distance < 15) { // Hit radius
-        explosions.push(new Explosion(contact.x, contact.y));
-        
-        playExplosionSound();
-        
-        if (torpedo.ownerId === 'player') {
-          addLogEntry(`HIT! ${contact.id} destroyed by torpedo.`, 'friendly');
-          
-          // Create oil trail from damaged ship
-          oilTrails.push(new OilTrail(contact.x, contact.y));
-          
-          // Apply damage to player sub
-          applyDamage(10);
-        } else {
-          addLogEntry(`${contact.id} hit by enemy torpedo!`, 'hostile');
-          
-          // Player hit!
-          if (contact.type === 'friendly_sub' && contact.x === PLAYER_X && contact.y === PLAYER_Y) {
-            applyDamage(25);
-          }
-        }
-        
-        contacts.splice(c, 1);
-        torpedoes.splice(i, 1);
-        break;
-      }
-    }
-  }
-
-  // Draw oil trails
-  for (let i = oilTrails.length - 1; i >= 0; i--) {
-    const trail = oilTrails[i];
-    
-    if (!trail.update()) {
-      oilTrails.splice(i, 1);
-      continue;
-    }
-    
-    trail.draw(ctx);
-  }
-
-  // Update enemy log
-  updateEnemyLogPanel();
-
-  // Check collisions between contacts
-  for (let i = 0; i < contacts.length; i++) {
-    const contact1 = contacts[i];
-    
-    for (let j = i + 1; j < contacts.length; j++) {
-      const contact2 = contacts[j];
-      
-      const dx = contact1.x - contact2.x;
-      const dy = contact1.y - contact2.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
-      if (distance < 30) { // Collision threshold
-        explosions.push({
-          x: (contact1.x + contact2.x) / 2,
-          y: (contact1.y + contact2.y) / 2,
-          radius: 15,
-          opacity: 1.0
-        });
-        
-        playExplosionSound();
-        
-        contacts.splice(j, 1);
-        contacts.splice(i, 1);
-        
-        addLogEntry(`COLLISION DETECTED! Contacts destroyed at bearing ${Math.round(Math.atan2(dy, dx) * 180/Math.PI)}°.`, 'hostile');
-        
-        j--;
-      }
-    }
-  }
-
-  // Check victory condition
-  checkVictoryCondition();
-}
-
 // Draw Contacts
 function drawContacts() {
   const trailLength = Math.PI / 6;
   
   for (let i = contacts.length - 1; i >= 0; i--) {
-    if (contacts[i].maxDepth > 0 && contacts[i].maxDepth < maxDepthM) {
-      // Keep contact if within depth filter
-    } else if (contacts[i].maxDepth === -1) {
-      // Airplane, always visible
-    } else {
-      // Remove contact if out of range or below max depth
-      if (contacts[i].y > canvas.height || contacts[i].x < 0 || contacts[i].x > canvas.width) {
-        contacts.splice(i, 1);
-        continue;
-      }
-    }
-    
+    // FIXED: Proper depth filtering logic
     const contact = contacts[i];
+    
+    if (contact.maxDepth === -1) {
+      // Airplane, always visible
+    } else if (contact.maxDepth <= maxDepthM) {
+      // Keep contact if within depth filter
+    } else {
+      // Remove contact if below max depth
+      contacts.splice(i, 1);
+      continue;
+    }
     
     // Update position
     contact.update();
@@ -3106,7 +2872,7 @@ function drawContacts() {
   }
 }
 
-// Draw Sonar Echo Rings
+// Draw Sonar Echo Rings (DEPRECATED)
 function drawSonarEchoRings() {
   for (let i = echoRings.length - 1; i >= 0; i--) {
     const ring = echoRings[i];
@@ -3200,6 +2966,24 @@ function updateAcousticData() {
 // Setup Event Listeners
 function setupEventListeners() {
   try {
+    // Initialize canvas tracking - CRITICAL FOR RADAR TO WORK
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+
+    // Force an interaction to unlock the AudioContext
+    canvas.addEventListener('click', () => {
+      initAudio();
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      mouseX = null;
+      mouseY = null;
+    });
+
     const depthSlider = document.getElementById('depthSlider');
     if (depthSlider) {
       depthSlider.addEventListener('input', (e) => {
@@ -3470,9 +3254,10 @@ function animate() {
       drawCoordinateCrosshair();
     }
     
+    // Unified physics and rendering loop
     drawProjectiles();
     
-    checkCollisions();
+    // Removed duplicate checkCollisions() call - logic now embedded in drawProjectiles()
     
     drawContacts();
     drawRadarSweep();
